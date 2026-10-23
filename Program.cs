@@ -8,9 +8,11 @@ namespace OlympiadProject
         [STAThread]
         static void Main()
         {
+            AppDomain.CurrentDomain.SetData("DataDirectory", AppDomain.CurrentDomain.BaseDirectory);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainDashboard()); 
+            Application.Run(new MainDashboard());
         }
     }
 }

@@ -278,30 +278,44 @@ namespace OlympiadProject
 
             btnAdd.Click += (s, e) => {
                 var form = new EditForm("Новый студент", new[] { "ФИО", "Группа", "Факультет", "Email" }, new string[4]);
-                if (form.ShowDialog() == DialogResult.OK && form.IsSaved)
+                if (form.ShowDialog() == DialogResult.OK)
                 {
                     var v = form.GetValues();
-                    using (var db = new AppDbContext()) { db.Students.Add(new Student { FullName = v[0], GroupName = v[1], Faculty = v[2], Email = v[3] }); db.SaveChanges(); }
-                    LoadData();
+                    try
+                    {
+                        using (var db = new AppDbContext())
+                        {
+                            db.Students.Add(new Student { FullName = v[0], GroupName = v[1], Faculty = v[2], Email = v[3] });
+                            db.SaveChanges();
+                        }
+                        LoadData();
+                        MessageBox.Show("Успешно добавлено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
             };
 
             btnEdit.Click += (s, e) => {
                 if (gridStudents.CurrentRow == null) return;
                 int id = Convert.ToInt32(((DataRowView)gridStudents.CurrentRow.DataBoundItem)["Id"]);
-                using (var db = new AppDbContext())
+                try
                 {
-                    var student = db.Students.Find(id);
-                    if (student == null) return;
-                    var form = new EditForm("Редактировать", new[] { "ФИО", "Группа", "Факультет", "Email" }, new[] { student.FullName, student.GroupName, student.Faculty, student.Email });
-                    if (form.ShowDialog() == DialogResult.OK && form.IsSaved)
+                    using (var db = new AppDbContext())
                     {
-                        var v = form.GetValues();
-                        student.FullName = v[0]; student.GroupName = v[1]; student.Faculty = v[2]; student.Email = v[3];
-                        db.SaveChanges();
-                        LoadData();
+                        var student = db.Students.Find(id);
+                        if (student == null) return;
+                        var form = new EditForm("Редактировать", new[] { "ФИО", "Группа", "Факультет", "Email" }, new[] { student.FullName, student.GroupName, student.Faculty, student.Email });
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            var v = form.GetValues();
+                            student.FullName = v[0]; student.GroupName = v[1]; student.Faculty = v[2]; student.Email = v[3];
+                            db.SaveChanges();
+                            LoadData();
+                            MessageBox.Show("Успешно изменено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             };
 
             btnDelete.Click += (s, e) => {
@@ -309,12 +323,17 @@ namespace OlympiadProject
                 if (MessageBox.Show("Удалить студента?", "Внимание", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     int id = Convert.ToInt32(((DataRowView)gridStudents.CurrentRow.DataBoundItem)["Id"]);
-                    using (var db = new AppDbContext())
+                    try
                     {
-                        var studentToDelete = db.Students.Find(id);
-                        if (studentToDelete != null) { db.Students.Remove(studentToDelete); db.SaveChanges(); }
+                        using (var db = new AppDbContext())
+                        {
+                            var studentToDelete = db.Students.Find(id);
+                            if (studentToDelete != null) { db.Students.Remove(studentToDelete); db.SaveChanges(); }
+                        }
+                        LoadData();
+                        MessageBox.Show("Успешно удалено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    LoadData();
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
             };
 
@@ -354,30 +373,40 @@ namespace OlympiadProject
 
             btnAdd.Click += (s, e) => {
                 var form = new EditForm("Новый предмет", new[] { "Название", "Преподаватель" }, new string[2]);
-                if (form.ShowDialog() == DialogResult.OK && form.IsSaved)
+                if (form.ShowDialog() == DialogResult.OK)
                 {
                     var v = form.GetValues();
-                    using (var db = new AppDbContext()) { db.Subjects.Add(new Subject { Name = v[0], Teacher = v[1] }); db.SaveChanges(); }
-                    LoadData();
+                    try
+                    {
+                        using (var db = new AppDbContext()) { db.Subjects.Add(new Subject { Name = v[0], Teacher = v[1] }); db.SaveChanges(); }
+                        LoadData();
+                        MessageBox.Show("Успешно добавлено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
             };
 
             btnEdit.Click += (s, e) => {
                 if (gridSubjects.CurrentRow == null) return;
                 int id = Convert.ToInt32(((DataRowView)gridSubjects.CurrentRow.DataBoundItem)["Id"]);
-                using (var db = new AppDbContext())
+                try
                 {
-                    var subj = db.Subjects.Find(id);
-                    if (subj == null) return;
-                    var form = new EditForm("Редактировать", new[] { "Название", "Преподаватель" }, new[] { subj.Name, subj.Teacher });
-                    if (form.ShowDialog() == DialogResult.OK && form.IsSaved)
+                    using (var db = new AppDbContext())
                     {
-                        var v = form.GetValues();
-                        subj.Name = v[0]; subj.Teacher = v[1];
-                        db.SaveChanges();
-                        LoadData();
+                        var subj = db.Subjects.Find(id);
+                        if (subj == null) return;
+                        var form = new EditForm("Редактировать", new[] { "Название", "Преподаватель" }, new[] { subj.Name, subj.Teacher });
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            var v = form.GetValues();
+                            subj.Name = v[0]; subj.Teacher = v[1];
+                            db.SaveChanges();
+                            LoadData();
+                            MessageBox.Show("Успешно изменено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             };
 
             btnDelete.Click += (s, e) => {
@@ -385,18 +414,19 @@ namespace OlympiadProject
                 if (MessageBox.Show("Удалить предмет?", "Внимание", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     int id = Convert.ToInt32(((DataRowView)gridSubjects.CurrentRow.DataBoundItem)["Id"]);
-                    using (var db = new AppDbContext())
+                    try
                     {
-                        bool isUsed = db.OlympiadSubjects.Any(os => os.SubjectId == id);
-                        if (isUsed)
+                        using (var db = new AppDbContext())
                         {
-                            MessageBox.Show("Нельзя удалить предмет, так как он привязан к олимпиаде!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            bool isUsed = db.OlympiadSubjects.Any(os => os.SubjectId == id);
+                            if (isUsed) { MessageBox.Show("Нельзя удалить предмет, он привязан к олимпиаде!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
+                            var subjectToDelete = db.Subjects.Find(id);
+                            if (subjectToDelete != null) { db.Subjects.Remove(subjectToDelete); db.SaveChanges(); }
                         }
-                        var subjectToDelete = db.Subjects.Find(id);
-                        if (subjectToDelete != null) { db.Subjects.Remove(subjectToDelete); db.SaveChanges(); }
+                        LoadData();
+                        MessageBox.Show("Успешно удалено!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    LoadData();
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
             };
 
@@ -429,19 +459,28 @@ namespace OlympiadProject
                 TextBox txtSc = new TextBox { Location = new Point(20, 160), Width = 100, Text = "5" };
                 Button btnSave = new Button { Text = "Сохранить", Location = new Point(20, 200), Width = 150, Height = 35, BackColor = Color.FromArgb(46, 204, 113), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Cursor = Cursors.Hand };
 
-                using (var db = new AppDbContext())
+                try
                 {
-                    cmbSt.DataSource = db.Students.ToList(); cmbSt.DisplayMember = "FullName"; cmbSt.ValueMember = "Id";
-                    cmbSb.DataSource = db.Subjects.ToList(); cmbSb.DisplayMember = "Name"; cmbSb.ValueMember = "Id";
-                }
-
-                btnSave.Click += (s2, e2) => {
                     using (var db = new AppDbContext())
                     {
-                        db.Grades.Add(new Grade { StudentId = (int)cmbSt.SelectedValue, SubjectId = (int)cmbSb.SelectedValue, Score = int.Parse(txtSc.Text), Date = DateTime.Now.ToShortDateString() });
-                        db.SaveChanges();
+                        cmbSt.DataSource = db.Students.ToList(); cmbSt.DisplayMember = "FullName"; cmbSt.ValueMember = "Id";
+                        cmbSb.DataSource = db.Subjects.ToList(); cmbSb.DisplayMember = "Name"; cmbSb.ValueMember = "Id";
                     }
-                    form.Close(); LoadData();
+                }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка загрузки списков", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
+                btnSave.Click += (s2, e2) => {
+                    try
+                    {
+                        using (var db = new AppDbContext())
+                        {
+                            db.Grades.Add(new Grade { StudentId = (int)cmbSt.SelectedValue, SubjectId = (int)cmbSb.SelectedValue, Score = int.Parse(txtSc.Text), Date = DateTime.Now.ToShortDateString() });
+                            db.SaveChanges();
+                        }
+                        form.Close(); LoadData();
+                        MessageBox.Show("Оценка выставлена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 };
 
                 form.Controls.AddRange(new Control[] {
@@ -486,80 +525,68 @@ namespace OlympiadProject
             Button btnDelete = new Button { Text = "🗑 Удалить", Location = new Point(540, 18), BackColor = Color.FromArgb(231, 76, 60), ForeColor = Color.White, FlatStyle = FlatStyle.Flat, Width = 120, Height = 32, Font = new Font("Segoe UI", 9, FontStyle.Bold), Cursor = Cursors.Hand };
 
             btnAdd.Click += (s, e) => {
-                var form = new EditForm("Новая олимпиада",
-                    new[] { "Название", "Уровень", "Проходной балл", "Дата", "Призовой фонд" },
-                    new[] { "", "", "4,5", "", "" },
-                    new[] { "Профильный предмет" });
-
-                using (var db = new AppDbContext())
+                var form = new EditForm("Новая олимпиада", new[] { "Название", "Уровень", "Проходной балл", "Дата", "Призовой фонд" }, new[] { "", "", "4,5", "", "" }, new[] { "Профильный предмет" });
+                try
                 {
-                    var subjects = db.Subjects.ToList();
-                    form.ComboBoxes[0].DataSource = subjects;
-                    form.ComboBoxes[0].DisplayMember = "Name";
-                    form.ComboBoxes[0].ValueMember = "Id";
-                    form.ComboBoxes[0].SelectedIndex = -1;
+                    using (var db = new AppDbContext())
+                    {
+                        var subjects = db.Subjects.ToList();
+                        form.ComboBoxes[0].DataSource = subjects; form.ComboBoxes[0].DisplayMember = "Name"; form.ComboBoxes[0].ValueMember = "Id"; form.ComboBoxes[0].SelectedIndex = -1;
+                    }
                 }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка загрузки предметов", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
-                if (form.ShowDialog() == DialogResult.OK && form.IsSaved)
+                if (form.ShowDialog() == DialogResult.OK)
                 {
                     var v = form.GetValues();
                     double.TryParse(v[2].Replace(".", ","), out double score);
-
-                    using (var db = new AppDbContext())
+                    try
                     {
-                        var newOlimp = new Olympiad { Name = v[0], Level = v[1], PassingScore = score, Date = v[3], PrizeFund = v[4] };
-                        db.Olympiads.Add(newOlimp);
-                        db.SaveChanges();
-
-                        if (form.ComboBoxes[0].SelectedValue != null && (int)form.ComboBoxes[0].SelectedValue > 0)
-                            db.OlympiadSubjects.Add(new OlympiadSubject { OlympiadId = newOlimp.Id, SubjectId = (int)form.ComboBoxes[0].SelectedValue, IsProfile = true });
-
-                        db.SaveChanges();
+                        using (var db = new AppDbContext())
+                        {
+                            var newOlimp = new Olympiad { Name = v[0], Level = v[1], PassingScore = score, Date = v[3], PrizeFund = v[4] };
+                            db.Olympiads.Add(newOlimp); db.SaveChanges();
+                            if (form.ComboBoxes[0].SelectedValue != null && (int)form.ComboBoxes[0].SelectedValue > 0)
+                                db.OlympiadSubjects.Add(new OlympiadSubject { OlympiadId = newOlimp.Id, SubjectId = (int)form.ComboBoxes[0].SelectedValue, IsProfile = true });
+                            db.SaveChanges();
+                        }
+                        LoadData();
+                        MessageBox.Show("Олимпиада добавлена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    LoadData();
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
             };
 
             btnEdit.Click += (s, e) => {
                 if (gridOlympiads.CurrentRow == null) return;
                 int id = Convert.ToInt32(((DataRowView)gridOlympiads.CurrentRow.DataBoundItem)["Id"]);
-
-                using (var db = new AppDbContext())
+                try
                 {
-                    var olimp = db.Olympiads.Find(id);
-                    if (olimp == null) return;
-
-                    var form = new EditForm("Редактировать",
-                        new[] { "Название", "Уровень", "Проходной балл", "Дата", "Призовой фонд" },
-                        new[] { olimp.Name, olimp.Level, olimp.PassingScore.ToString(), olimp.Date ?? "", olimp.PrizeFund ?? "" },
-                        new[] { "Профильный предмет" });
-
-                    var subjects = db.Subjects.ToList();
-                    form.ComboBoxes[0].DataSource = subjects;
-                    form.ComboBoxes[0].DisplayMember = "Name";
-                    form.ComboBoxes[0].ValueMember = "Id";
-
-                    var linkedSubject = db.OlympiadSubjects.FirstOrDefault(os => os.OlympiadId == olimp.Id);
-                    if (linkedSubject != null) form.ComboBoxes[0].SelectedValue = linkedSubject.SubjectId;
-
-                    if (form.ShowDialog() == DialogResult.OK && form.IsSaved)
+                    using (var db = new AppDbContext())
                     {
-                        var v = form.GetValues();
-                        double.TryParse(v[2].Replace(".", ","), out double score);
+                        var olimp = db.Olympiads.Find(id);
+                        if (olimp == null) return;
+                        var form = new EditForm("Редактировать", new[] { "Название", "Уровень", "Проходной балл", "Дата", "Призовой фонд" }, new[] { olimp.Name, olimp.Level, olimp.PassingScore.ToString(), olimp.Date ?? "", olimp.PrizeFund ?? "" }, new[] { "Профильный предмет" });
+                        var subjects = db.Subjects.ToList();
+                        form.ComboBoxes[0].DataSource = subjects; form.ComboBoxes[0].DisplayMember = "Name"; form.ComboBoxes[0].ValueMember = "Id";
+                        var linkedSubject = db.OlympiadSubjects.FirstOrDefault(os => os.OlympiadId == olimp.Id);
+                        if (linkedSubject != null) form.ComboBoxes[0].SelectedValue = linkedSubject.SubjectId;
 
-                        olimp.Name = v[0]; olimp.Level = v[1]; olimp.PassingScore = score;
-                        olimp.Date = v[3]; olimp.PrizeFund = v[4];
-
-                        var oldLinks = db.OlympiadSubjects.Where(os => os.OlympiadId == olimp.Id);
-                        db.OlympiadSubjects.RemoveRange(oldLinks);
-
-                        if (form.ComboBoxes[0].SelectedValue != null && (int)form.ComboBoxes[0].SelectedValue > 0)
-                            db.OlympiadSubjects.Add(new OlympiadSubject { OlympiadId = olimp.Id, SubjectId = (int)form.ComboBoxes[0].SelectedValue, IsProfile = true });
-
-                        db.SaveChanges();
-                        LoadData();
+                        if (form.ShowDialog() == DialogResult.OK)
+                        {
+                            var v = form.GetValues();
+                            double.TryParse(v[2].Replace(".", ","), out double score);
+                            olimp.Name = v[0]; olimp.Level = v[1]; olimp.PassingScore = score; olimp.Date = v[3]; olimp.PrizeFund = v[4];
+                            var oldLinks = db.OlympiadSubjects.Where(os => os.OlympiadId == olimp.Id); db.OlympiadSubjects.RemoveRange(oldLinks);
+                            if (form.ComboBoxes[0].SelectedValue != null && (int)form.ComboBoxes[0].SelectedValue > 0)
+                                db.OlympiadSubjects.Add(new OlympiadSubject { OlympiadId = olimp.Id, SubjectId = (int)form.ComboBoxes[0].SelectedValue, IsProfile = true });
+                            db.SaveChanges();
+                            LoadData();
+                            MessageBox.Show("Олимпиада изменена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
+                catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             };
 
             btnDelete.Click += (s, e) => {
@@ -567,19 +594,21 @@ namespace OlympiadProject
                 if (MessageBox.Show("Удалить олимпиаду?", "Внимание", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     int id = Convert.ToInt32(((DataRowView)gridOlympiads.CurrentRow.DataBoundItem)["Id"]);
-
-                    using (var db = new AppDbContext())
+                    try
                     {
-                        var olimpToDelete = db.Olympiads.Find(id);
-                        if (olimpToDelete != null)
+                        using (var db = new AppDbContext())
                         {
-                            var links = db.OlympiadSubjects.Where(os => os.OlympiadId == olimpToDelete.Id);
-                            db.OlympiadSubjects.RemoveRange(links);
-                            db.Olympiads.Remove(olimpToDelete);
-                            db.SaveChanges();
+                            var olimpToDelete = db.Olympiads.Find(id);
+                            if (olimpToDelete != null)
+                            {
+                                var links = db.OlympiadSubjects.Where(os => os.OlympiadId == olimpToDelete.Id);
+                                db.OlympiadSubjects.RemoveRange(links); db.Olympiads.Remove(olimpToDelete); db.SaveChanges();
+                            }
                         }
+                        LoadData();
+                        MessageBox.Show("Олимпиада удалена!", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    LoadData();
+                    catch (Exception ex) { MessageBox.Show(ex.Message, "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 }
             };
 
@@ -628,44 +657,42 @@ namespace OlympiadProject
 
         private void LoadData()
         {
-            using (var db = new AppDbContext())
+            try
             {
-                var studentsList = db.Students.ToList();
-                dvStudents = new DataView(ToDataTable(studentsList));
-                gridStudents.DataSource = dvStudents;
+                using (var db = new AppDbContext())
+                {
+                    var studentsList = db.Students.ToList();
+                    dvStudents = new DataView(ToDataTable(studentsList));
+                    gridStudents.DataSource = dvStudents;
 
-                var subjectsList = db.Subjects.ToList();
-                dvSubjects = new DataView(ToDataTable(subjectsList));
-                gridSubjects.DataSource = dvSubjects;
+                    var subjectsList = db.Subjects.ToList();
+                    dvSubjects = new DataView(ToDataTable(subjectsList));
+                    gridSubjects.DataSource = dvSubjects;
 
-                var olympiadsList = db.Olympiads.ToList();
-                dvOlympiads = new DataView(ToDataTable(olympiadsList));
-                gridOlympiads.DataSource = dvOlympiads;
+                    var olympiadsList = db.Olympiads.ToList();
+                    dvOlympiads = new DataView(ToDataTable(olympiadsList));
+                    gridOlympiads.DataSource = dvOlympiads;
 
-                if (gridStudents.Columns["Id"] != null) gridStudents.Columns["Id"].Visible = false;
-                if (gridSubjects.Columns["Id"] != null) gridSubjects.Columns["Id"].Visible = false;
-                if (gridOlympiads.Columns["Id"] != null) gridOlympiads.Columns["Id"].Visible = false;
+                    if (gridStudents.Columns["Id"] != null) gridStudents.Columns["Id"].Visible = false;
+                    if (gridSubjects.Columns["Id"] != null) gridSubjects.Columns["Id"].Visible = false;
+                    if (gridOlympiads.Columns["Id"] != null) gridOlympiads.Columns["Id"].Visible = false;
 
-                cmbFilterOlympiadsForResults.DataSource = db.Olympiads.ToList();
-                cmbFilterOlympiadsForResults.DisplayMember = "Name";
-                cmbFilterOlympiadsForResults.ValueMember = "Id";
+                    cmbFilterOlympiadsForResults.DataSource = db.Olympiads.ToList();
+                    cmbFilterOlympiadsForResults.DisplayMember = "Name";
+                    cmbFilterOlympiadsForResults.ValueMember = "Id";
 
-                var gradesView = db.Grades.Include(g => g.Student).Include(g => g.Subject)
-                    .Select(g => new {
-                        g.Id,
-                        Студент = g.Student.FullName,
-                        Предмет = g.Subject.Name,
-                        Оценка = g.Score,
-                        Дата = g.Date
-                    }).ToList();
-                gridGrades.DataSource = gradesView;
-                if (gridGrades.Columns["Id"] != null) gridGrades.Columns["Id"].Visible = false;
+                    var gradesView = db.Grades.Include(g => g.Student).Include(g => g.Subject)
+                        .Select(g => new { g.Id, Студент = g.Student.FullName, Предмет = g.Subject.Name, Оценка = g.Score, Дата = g.Date }).ToList();
+                    gridGrades.DataSource = gradesView;
+                    if (gridGrades.Columns["Id"] != null) gridGrades.Columns["Id"].Visible = false;
 
-                lblCountStudents.Text = db.Students.Count().ToString();
-                lblCountOlympiads.Text = db.Olympiads.Count().ToString();
-                lblCountSubjects.Text = db.Subjects.Count().ToString();
-                lblCountGrades.Text = db.Grades.Count().ToString();
+                    lblCountStudents.Text = db.Students.Count().ToString();
+                    lblCountOlympiads.Text = db.Olympiads.Count().ToString();
+                    lblCountSubjects.Text = db.Subjects.Count().ToString();
+                    lblCountGrades.Text = db.Grades.Count().ToString();
+                }
             }
+            catch (Exception ex) { MessageBox.Show("Ошибка загрузки данных: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private DataTable ToDataTable<T>(System.Collections.Generic.IEnumerable<T> items)

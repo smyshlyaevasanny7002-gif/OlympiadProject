@@ -24,6 +24,8 @@ namespace OlympiadProject
         public string Name { get; set; }
         public string Level { get; set; }
         public double PassingScore { get; set; }
+        public string Date { get; set; } 
+        public string PrizeFund { get; set; } 
     }
 
     public class OlympiadSubject

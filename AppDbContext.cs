@@ -16,5 +16,15 @@ namespace OlympiadProject
             string connString = ConfigurationManager.ConnectionStrings["OlympiadConn"].ConnectionString;
             optionsBuilder.UseSqlServer(connString);
         }
+
+        public static void EnsureDatabaseUpdated()
+        {
+            using (var db = new AppDbContext())
+            {
+                try { db.Database.ExecuteSqlRaw("ALTER TABLE Olympiads ADD [Date] NVARCHAR(50) NULL;"); } catch { }
+
+                try { db.Database.ExecuteSqlRaw("ALTER TABLE Olympiads ADD [PrizeFund] NVARCHAR(100) NULL;"); } catch { }
+            }
+        }
     }
 }
