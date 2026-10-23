@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace OlympiadProject
 {
@@ -6,11 +7,14 @@ namespace OlympiadProject
     {
         public DbSet<Student> Students { get; set; }
         public DbSet<Subject> Subjects { get; set; }
+        public DbSet<Olympiad> Olympiads { get; set; }
+        public DbSet<OlympiadSubject> OlympiadSubjects { get; set; }
         public DbSet<Grade> Grades { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source=olympiad.db");
+            string connString = ConfigurationManager.ConnectionStrings["OlympiadConn"].ConnectionString;
+            optionsBuilder.UseSqlServer(connString);
         }
     }
 }
